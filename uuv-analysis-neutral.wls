@@ -5,7 +5,7 @@ Import["composition-utils-package.wl"]
 
 
 (* configuration parameters *) 
-iterationCt = 2; (* number of cross-validations to perform *) 
+iterationCt = 20; (* number of cross-validations to perform *) 
 validationFraction = 0.5; (* percent of validation data in the validation/testing split *)
 conservatismWeight = 0.5;  (* weight of conservatism vs accuracy in monitor calibration *) 
 meansFname = "uuv_means_" <> ToString@iterationCt <> "_" <> ToString@conservatismWeight <> ".csv" ; 
