@@ -13,7 +13,15 @@ noiseAssnHolds::usage="Flag for the MC noise assumption holding, per run"
 steepAssnHolds::usage="Flag for the MC hill steepness assumption holding, per run"
 mcProbs::usage="Confidences in the MC noise assumption aka monitor 1 (from particle filter)"
 mgConfs::usage="Confidences in the MC hill steepness assumption aka monitor 2 (from ModelGuard)"
+
+trialDirs::usage="Directories with UUV data";
+uuvSafeties::usage="Flags whether UUV ended up safe or not" 
+cutLen::usage="Length of UUV observation history to consider"; 
+stateAssns::usage="Flags whether UUV state assumptions are satisfied"
 stateMonLoaded::usage="UUV state monitor values loaded from cached files" 
+mgUuvConfs::usage="UUV model monitor confidences"
+verifiedUuvStateAll::usage="Encoding of the verified state boundary"
+
 outM1Pairs::usage="Sequence of pairs (mission outcome, monitor 1 confidence)"
 outM2Pairs::usage="Sequence of pairs (mission outcome, monitor 2 confidence)"
 a1M1Pairs::usage="Sequence of pairs (assumption 1 holding, monitor 1 confidence)"
@@ -22,6 +30,11 @@ m1sByRun::usage="Sequences of monitor 1 confidences, one per run"
 m2sByRun::usage="Sequences of monitor 2 confidences, one per run"
 m1M2sByRun::usage="Pairs of (monitor 1 confidence, monitor 2 confidence), one per run"
 a1AndA2ByPoint::usage="Pairs of (monitor 1 confidence, monitor 2 confidence) flattened across all runs"
+varM1::usage="Variance of Monitor 1"
+varM2::usage="Variance of Monitor 2"
+jointHistAssnSat::usage="Joint distribution of satisfied assumptions as a histogram"
+jointHistAssnNotSat::usage="Joint distribution of not satisfied assumptions as a histogram"
+
 
 (* General helper functions *) 
 logit::usage="Compute logit"; 
@@ -151,14 +164,14 @@ doValidationTuning[mcOrUuv_,consW_,monsOnly_]:=  (
 
 If[mcOrUuv, 
 (* mc cal *) 
-PrintTemporary["Calibrating Monitor 1"];
+PrintTemporary["Calibrating monitor 1"];
 m1CalParams =calibrateMon[a1M1Pairs,consW(*,-100<a<100\[And] -100<b<100 *)]; 
-PrintTemporary["Calibrating Monitor 2"];
+PrintTemporary["Calibrating monitor 2"];
 m2CalParams =calibrateMon[a2M2Pairs, consW];
 ,(* uuv cal *)
-PrintTemporary["Calibrating Monitor 1"];
+PrintTemporary["Calibrating monitor 1"];
 m1CalParams =calibrateMon[a1M1Pairs, consW]; 
-PrintTemporary["Calibrating Monitor 2"];
+PrintTemporary["Calibrating monitor 2"];
 m2CalParams =(*{a\[Rule] 1, b\[Rule]0}*)calibrateMon[a2M2Pairs, consW(*,  0<a\[And]0<b*)];
 ];
 
@@ -238,24 +251,15 @@ outM2CalPairs
 }
 ,
 calibEvalShort/@{
-a1M1CalPairs,
-outM1CalPairs,
-a2M2CalPairs, 
-outM2CalPairs,
-a1AndA2ProdComp,
-outProdComp,
-a1AndA2ProdSqComp,
-outProdSqComp,
-a1AndA2AvgComp, 
-outAvgComp,
-a1AndA2WeightAvgComp,
-outWeightAvgComp,
-a1AndA2CopBounComp, 
-outCopBounComp,
-a1andA2LrComp,
-outLrComp,
-a1andA2BayesComp,
-outBayesComp
+a1M1CalPairs, outM1CalPairs,
+a2M2CalPairs, outM2CalPairs,
+a1AndA2ProdComp, outProdComp,
+a1AndA2WeightAvgComp, outWeightAvgComp,
+a1AndA2ProdSqComp, outProdSqComp, 
+a1andA2LrComp, outLrComp,
+a1andA2BayesComp, outBayesComp,
+a1AndA2AvgComp, outAvgComp,
+a1AndA2CopBounComp, outCopBounComp
 }
 ]
 ); 
@@ -313,13 +317,17 @@ resMats
 
 addHeadingsToResultsMatrix[mat_]:=Insert[ (* add row of column titles *)
 Join[(* add column of method titles *)Partition[
-{"M1-assn", "M1-outcome", "M2-assn", "M2-outcome",
-"Prod-assn", "ProdSq-assn", "ProdSq-outcome", "Prod-outcome", 
-"Avg-assn", "Avg-outcome","AvgVar-assn", "AvgVar-outcome", 
-"LowCop-assn", "LowCop-outcome", "LR-assn", "LR-outcome", 
-"Bayes-assn", "Bayes-outcome"},1],
+{"Mon 1->assn 1", "Mon 1->outcome", "Mon 2->assn 2", "Mon 2->outcome",
+"Product->assns", "Product->outcome", 
+"AveragingVariance->assns", "AveragingVariance->outcome", 
+"ProductSquared->assns", "ProductSquared->outcome", 
+"LogReg->assns", "LogReg->outcome", 
+"Bayes->assns", "Bayes->outcome",
+"Averaging->assns", "Averaging->outcome",
+"LowCopula->assns", "LowCopula->outcome"
+},1],
 mat, 2],
-{ "Method", "ECE","MCE", "CCE", "Brier", "AUC"},1] //MatrixForm;
+{ "Monitor->Event", "ECE","MCE", "CCE", "Brier", "AuC"},1] //MatrixForm;
 
 
 (* END of case study analysis functions *) 
@@ -352,6 +360,65 @@ loadUuvFilenames[ resultsDir];
 loadSomeUuvData[idx,  (*mg step count*) 4]; 
 organizeUuvData[uuvSafeties(*uuvSafe*), stateAssns, Not/@findist, stateMonLoaded, mgUuvConfs]; 
 );
+
+
+(* the boundary of verified UUV states *) 
+verifiedUuvStateTowards[y_, h_]:=(0<=h<=2.5 \[And] 10.05<=y<=50) \[Or] \
+(2.5<=h<=3.5 \[And] 10.1<=y<=50) \[Or] \
+(3.5<=h<=4 \[And] 10.15<=y<=50) \[Or] \
+(4<=h<=4.5 \[And] 10.2<=y<=50) \[Or] \
+(4.5<=h<=5 \[And] 10.25<=y<=50) \[Or] \
+(5<=h<=5.5 \[And] 10.3<=y<=50) \[Or] \
+(5.5<=h<=6 \[And] 10.35<=y<=50) \[Or] \
+(6<=h<=6.5 \[And] 10.4<=y<=50) \[Or] \
+(6.5<=h<=7 \[And] 10.5<=y<=50) \[Or] \
+(7<=h<=7.5 \[And] 10.6<=y<=50) \[Or] \
+(7.5<=h<=8 \[And] 10.7<=y<=50) \[Or] \
+ (8<=h<=8.5 \[And] 10.8<=y<=50) \[Or] \
+(8.5<=h<=9 \[And] 10.9<=y<=50) \[Or] \
+(9<=h<=9.5 \[And] 11.05<=y<=50) \[Or] \
+(9.5<=h<=10 \[And] 11.15<=y<=50) \[Or] \
+(10<=h<=10.5 \[And] 11.3<=y<=50) \[Or] \
+(10.5<=h<=11 \[And] 11.45<=y<=50) \[Or] \
+(11<=h<=11.5 \[And] 11.6<=y<=50) \[Or] \
+(11.5<=h<=12 \[And] 11.8<=y<=50) \[Or] \
+(12<=h<=12.5 \[And] 11.95<=y<=50) \[Or] \
+(12.5<=h<=13 \[And] 12.15<=y<=50) \[Or] \
+( 13<=h<=13.5 \[And] 12.35<=y<=50) \[Or] \
+(13.5<=h<=14 \[And] 12.55<=y<=50) \[Or] \
+(14<=h<=14.5 \[And] 12.75<=y<=50) \[Or] \
+(14.5<=h<=15 \[And] 12.95<=y<=50) \[Or] \
+(15<=h<=15.5 \[And] 13.2<=y<=50) \[Or] \
+(15.5<=h<=16 \[And] 13.4<=y<=50) \[Or] \
+(16<=h<=16.5 \[And] 13.6<=y<=50) \[Or] \
+(16.5<=h<=17 \[And] 13.85<=y<=50) \[Or] \
+(17<=h<=17.5 \[And] 14.05<=y<=50) \[Or] \
+(17.5<=h<=18 \[And] 14.25<=y<=50) \[Or] \
+(18<=h<=18.5 \[And] 14.5<=y<=50) \[Or] \
+(18.5<=h<=19 \[And] 14.7<=y<=50) \[Or] \
+(19<=h<=19.5 \[And] 14.9<=y<=50) \[Or] \
+(19.5<=h<=20 \[And] 15.15<=y<=50) \[Or] \
+(20<=h<=20.5 \[And] 15.35<=y<=50) \[Or] \
+(20.5<=h<=21 \[And] 15.55<=y<=50) \[Or] \
+(21<=h<=21.5 \[And] 15.75<=y<=50) \[Or] \
+(21.5<=h<=22 \[And] 16<=y<=50) \[Or] \
+(22<=h<=22.5 \[And] 16.2<=y<=50) \[Or] \
+(22.5<=h<=23 \[And] 16.4<=y<=50) \[Or] \
+(23<=h<=23.5 \[And] 16.6<=y<=50) \[Or] \
+(23.5<=h<=24 \[And] 16.85<=y<=50) \[Or] \
+(24<=h<=24.5 \[And] 17.05<=y<=50) \[Or] \
+(24.5<=h<=25 \[And] 17.25<=y<=50) \[Or] \
+(25<=h<=25.5 \[And] 17.45<=y<=50) \[Or] \
+(25.5<=h<=26 \[And] 17.65<=y<=50) \[Or] \
+(26<=h<=26.5 \[And] 17.85<=y<=50) \[Or] \
+(26.5<=h<=27 \[And] 18.1<=y<=50) \[Or] \
+(27<=h<=27.5 \[And] 18.3<=y<=50) \[Or] \
+(27.5<=h<=28 \[And] 18.5<=y<=50) \[Or] \
+(28<=h<=28.5 \[And] 18.7<=y<=50) \[Or] \
+(28.5<=h<=29 \[And] 18.9<=y<=50) \[Or] \
+(29<=h<=29.5 \[And] 19.1<=y<=50) \[Or] \
+(29.5<=h<=30 \[And] 19.3<=y<=50);
+verifiedUuvStateAll[y_, h_]:=verifiedUuvStateTowards[y,h] \[Or] (h<= 0\[And] 10.1<=y);
 
 
 (* loads data into the variables, can count on mcProbs, mgConfs, successes *) 

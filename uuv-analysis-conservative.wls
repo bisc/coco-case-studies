@@ -8,28 +8,25 @@ Import["composition-utils-package.wl"]
 iterationCt = 2; (* number of cross-validations to perform *) 
 validationFraction = 0.5; (* percent of validation data in the validation/testing split *)
 conservatismWeight = 0.8;  (* weight of conservatism vs accuracy in monitor calibration *) 
-meansFname = "mc_means_" <> ToString@iterationCt <> "_" <> ToString@conservatismWeight <> ".csv" ; 
-stdsFname = "mc_stdevs_" <> ToString@iterationCt <> "_" <> ToString@conservatismWeight <> ".csv" ;
-Print["This script reproduces the results in Table 2, left side (mountain car)"];
+meansFname = "uuv_means_" <> ToString@iterationCt <> "_" <> ToString@conservatismWeight <> ".csv" ; 
+stdsFname = "uuv_stdevs_" <> ToString@iterationCt <> "_" <> ToString@conservatismWeight <> ".csv" ;
+Print["This script reproduces the results in Table 2, right side (UUV)"];
 Print["Starting ", iterationCt, " evaluations of monitors, conservatism weight = " <> ToString@conservatismWeight]
 
 
-(* main evaluation loop *)
-mcResults = {};
+(* main evaluation loop *) 
+uuvResults = {} 
 Table[
-mcResultsLocal = doMcEvals["mountaincar-logs/", 1, validationFraction, conservatismWeight, False] ;
-AppendTo[mcResults, mcResultsLocal]; 
-, {i,1,iterationCt}
-];
+uuvResultsLocal = doUuvEvals["uuv-logs", 1, validationFraction, conservatismWeight, False] ;
+AppendTo[uuvResults, uuvResultsLocal]; 
 Print["Done with evaluation #", i]; 
-, {i,1,iterationCt}
-];
+, {i,1,iterationCt}];
 Print["Done with ", iterationCt, " evaluations of monitors"]
 
 
 Print["Writing the resulting means to file "<>meansFname]
-Export[meansFname, addHeadingsToResultsMatrix@First@Mean@mcResults]
+Export[meansFname, addHeadingsToResultsMatrix@First@Mean@uuvResults]
 
 
 Print["Writing the resulting standard deviations to file "<>stdsFname]
-Export[stdsFname, addHeadingsToResultsMatrix@First@StandardDeviation@mcResults]
+Export[stdsFname, addHeadingsToResultsMatrix@First@StandardDeviation@uuvResults]

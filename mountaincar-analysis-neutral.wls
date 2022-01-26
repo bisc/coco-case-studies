@@ -9,12 +9,13 @@ iterationCt = 2; (* number of cross-validations to perform *)
 validationFraction = 0.5; (* percent of validation data in the validation/testing split *)
 conservatismWeight = 0.5;  (* weight of conservatism vs accuracy in monitor calibration *) 
 meansFname = "means_" <> ToString@iterationCt <> "_" <> ToString@conservatismWeight <> ".csv" ; 
-stdsFname = "stdevs_" <> ToString@iterationCt <> "_" <> ToString@conservatismWeight <> ".csv" ; ; 
+stdsFname = "stdevs_" <> ToString@iterationCt <> "_" <> ToString@conservatismWeight <> ".csv" ;
+Print["Starting ", iterationCt, " evaluations of monitors"]
+Print["This script reproduces the results in Table 1, left side (mountain car)"];
 
 
 (* main evaluation loop *)
 mcResults05 = {};
-Print["Starting ", iterationCt, " evaluations of monitors"]
 Table[
 mcResultsLocal = doMcEvals["mountaincar-logs/", 1, validationFraction, conservatismWeight, False] ;
 Print["Done with evaluation #", i]; 
