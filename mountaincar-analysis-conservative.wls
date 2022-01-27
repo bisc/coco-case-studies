@@ -20,9 +20,7 @@ Table[
 mcResultsLocal = doMcEvals["mountaincar-logs/", 1, validationFraction, conservatismWeight, False] ;
 AppendTo[mcResults, mcResultsLocal]; 
 , {i,1,iterationCt}
-];
 Print["Done with evaluation #", i]; 
-, {i,1,iterationCt}
 ];
 Print["Done with ", iterationCt, " evaluations of monitors"]
 

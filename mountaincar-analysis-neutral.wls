@@ -18,8 +18,8 @@ Print["This script reproduces the results in Table 1, left side (mountain car)"]
 mcResults05 = {};
 Table[
 mcResultsLocal = doMcEvals["mountaincar-logs/", 1, validationFraction, conservatismWeight, False] ;
-Print["Done with evaluation #", i]; 
 AppendTo[mcResults05, mcResultsLocal]; 
+Print["Done with evaluation #", i]; 
 , {i,1,iterationCt}
 ];
 Print["Done with ", iterationCt, " evaluations of monitors"]
