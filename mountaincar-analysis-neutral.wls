@@ -8,8 +8,8 @@ Import["composition-utils-package.wl"]
 iterationCt = 20; (* number of cross-validations to perform *) 
 validationFraction = 0.5; (* percent of validation data in the validation/testing split *)
 conservatismWeight = 0.5;  (* weight of conservatism vs accuracy in monitor calibration *) 
-meansFname = "means_" <> ToString@iterationCt <> "_" <> ToString@conservatismWeight <> ".csv" ; 
-stdsFname = "stdevs_" <> ToString@iterationCt <> "_" <> ToString@conservatismWeight <> ".csv" ;
+meansFname = "mc_means_" <> ToString@iterationCt <> "_" <> ToString@conservatismWeight <> ".csv" ; 
+stdsFname = "mc_stdevs_" <> ToString@iterationCt <> "_" <> ToString@conservatismWeight <> ".csv" ;
 Print["Starting ", iterationCt, " evaluations of monitors"]
 Print["This script reproduces the results in Table 1, left side (mountain car)"];
 
