@@ -5,8 +5,8 @@ Full paper: [arXiv](https://arxiv.org/abs/2111.03782)
 
 ### Folders
 
-* mountaincar-logs: the mountain car case study from OpenAI Gym. 
-* uuv-logs: the unmanned underwater vehicle (UUV) pipeline-scanning case study based on the ROS UUV simulator. 
+* coco-case-studies/mountaincar-logs: the mountain car case study from OpenAI Gym. 
+* coco-case-studies/uuv-logs: the unmanned underwater vehicle (UUV) pipeline-scanning case study based on the ROS UUV simulator. 
 
 ### Installing Wolfram Script
 
@@ -22,12 +22,14 @@ To run the analysis scripts, you would need to dowload and install a free versio
 
 ### Executing the analysis
 
+You can follow the Docker-based repeatability instructions in reproduction-instruction.pdf. Follow the build-image-from-scratch route. 
+
 To run the analysis scripts: 
 * UUV case study
-   - Neutral calibration: wolframscript uuv-analysis-neutral.wls
-   - Conservative calibration: wolframscript uuv-analysis-conservative.wls
+   - Neutral calibration: wolframscript <path_to>/uuv-analysis-neutral.wls
+   - Conservative calibration: wolframscript <path_to>/uuv-analysis-conservative.wls
 * Mountain car case study , 
-   - Neutral calibration: wolframscript mountaincar-analysis-neutral.wls
-   - Conservative calibration: wolframscript mountaincar-analysis-conservative.wls
+   - Neutral calibration: wolframscript <path_to>/mountaincar-analysis-neutral.wls
+   - Conservative calibration: wolframscript <path_to>/mountaincar-analysis-conservative.wls
 
 "wolframscript" is equivalent to and can be replaced with "wolfram -script". 
