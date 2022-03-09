@@ -6,8 +6,8 @@ Full paper: [arXiv](https://arxiv.org/abs/2111.03782). Feel free to contact the 
 ### Folders
 
 * coco-case-studies/: source code for the analysis of the case studies. 
-* coco-case-studies/mountaincar-logs: the mountain car case study from OpenAI Gym. 
-* coco-case-studies/uuv-logs: the unmanned underwater vehicle (UUV) pipeline-scanning case study based on the ROS UUV simulator. 
+* coco-case-studies/mountaincar-logs: the mountain car case study from [OpenAI Gym](https://gym.openai.com/). 
+* coco-case-studies/uuv-logs: the unmanned underwater vehicle (UUV) pipeline-scanning case study based on the [ROS UUV simulator](https://uuvsimulator.github.io/). 
 
 ### Installing Wolfram Script
 
