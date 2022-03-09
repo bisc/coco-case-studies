@@ -1,10 +1,11 @@
 # Confidence Composition: Case Studies
 The data and analysis scripts for case studies on Confidence Composition.
 
-Full paper: [arXiv](https://arxiv.org/abs/2111.03782)
+Full paper: [arXiv](https://arxiv.org/abs/2111.03782). Feel free to contact the first author with any questions. 
 
 ### Folders
 
+* coco-case-studies/: source code for the analysis of the case studies. 
 * coco-case-studies/mountaincar-logs: the mountain car case study from OpenAI Gym. 
 * coco-case-studies/uuv-logs: the unmanned underwater vehicle (UUV) pipeline-scanning case study based on the ROS UUV simulator. 
 
@@ -37,3 +38,9 @@ To run the analysis scripts:
 ### Interactive analysis via notebooks 
 
 The notebook-based analysis allows interactive processing and visualization of the data. You would need to install [Wolfram Mathematica](https://www.wolfram.com/mathematica/), version 12.1+. You can obtain a [free trial](https://www.wolfram.com/mathematica/trial/) or you may be at an institution with an [academic license](https://www.wolfram.com/mathematica/pricing/colleges-universities/). For read-only access, you can download a free [Wolfram Player](https://www.wolfram.com/player/).
+
+The following notebooks are provided: 
+* composition-utils.nb: utility functions to analyze compositions of confidence monitors. It contains the functionality analogous to the composition-utils-package.wl package. 
+* mountaincar-analysis.nb: a notebook with the analysis and exploration of the data from the mountain car case study. 
+* uuv-analysis.nb: a notebook with the analysis and exploration of the data from the underwater vehicle case study. 
+
