@@ -20,16 +20,20 @@ To run the analysis scripts, you would need to dowload and install a free versio
 4) Run "wolframscript" in your command line
 5) Input your Wolfram ID and password into the prompt
 
-### Executing the analysis
+### Executing the analysis via scripts 
 
-You can follow the Docker-based repeatability instructions in reproduction-instruction.pdf. Follow the build-image-from-scratch route. 
+You can follow the Docker-based repeatability instructions in the [reproduction-instruction.pdf](./reproduction-instruction.pdf). Follow the build-image-from-scratch route or download the built [docker image](https://drive.google.com/drive/folders/1YY6M_aFl7YsUhBvdzMZTTsf-8UrVAN2e).
 
 To run the analysis scripts: 
 * UUV case study
    - Neutral calibration: wolframscript <path_to>/uuv-analysis-neutral.wls
    - Conservative calibration: wolframscript <path_to>/uuv-analysis-conservative.wls
-* Mountain car case study , 
+* Mountain car case study 
    - Neutral calibration: wolframscript <path_to>/mountaincar-analysis-neutral.wls
    - Conservative calibration: wolframscript <path_to>/mountaincar-analysis-conservative.wls
 
 "wolframscript" is equivalent to and can be replaced with "wolfram -script". 
+
+### Interactive analysis via notebooks 
+
+The notebook-based analysis allows interactive processing and visualization of the data. You would need to install [Wolfram Mathematica](https://www.wolfram.com/mathematica/), version 12.1+. You can obtain a [free trial](https://www.wolfram.com/mathematica/trial/) or you may be at an institution with an [academic license](https://www.wolfram.com/mathematica/pricing/colleges-universities/). For read-only access, you can download a free [Wolfram Player](https://www.wolfram.com/player/).
